@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <title>Tetris</title>
+    </head>
+
+    <body>
+        <h1>Tetris</h1>
+
+        <main></main>
+        <div id="info">
+            <h3>Controls</h3>
+            <ul>
+                <li>Left - A / &#8592;</li>
+                <li>Right - D / &#8594;</li>
+                <li>Soft drop - S / &#8595;</li>
+                <li>Hard drop - Space</li>
+                <li>Rotate - R</li>
+                <li>Pause - Esc</li>
+            </ul>
+            </ul>
+            <h3>About</h3>
+            <span>Simple Tetris clone using my html div-grid.</span><br><br>
+            <span> Some features like "Wall kicks", "Shadow Tetromino", "hold piece", complicated score counting (T-spins etc.) are not implemented because of my boredom with this project.<br><br>
+            I tried to stick to the <a href="https://tetris.fandom.com/wiki/Tetris_Guideline">official Tetris guidelines</a>
+            how I could. Nevertheless, I don't want to expand this project furthermore as
+            I reached my goals and want to move on.</span>
+            <p><a href="https://github.com/UltimateDoge5" target="_blank">Github</a> <a href="https://www.youtube.com/watch?v=NmCCQxVBfyM">Music</a></p>
+        </div>
+        <div id="panel">
+            <div>
+                Next Tetromino:
+                <div id="nextTetromino"></div>
+            </div>
+            <button id="start">Start</button><br>
+            <button id="toggleMusic">Mute</button>
+        </div>
+        <div id="pauseOverlay" class="overlay">
+            <h1>PAUSED</h1>
+            <button id="resume">Resume</button>
+            <span id="pauseTimer">3</span>
+        </div>
+        <div id="gameOverOverlay" class="overlay">
+            <h1>GAME OVER</h1>
+            <span id="score">N/A</span>
+            <button id="playAgain">Play again</button>
+        </div>
+
+    </body>
+
+    <script src="build/index.js"></script>
+    <script src="build/blocks.js"></script>
+
+</html>

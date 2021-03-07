@@ -1,0 +1,128 @@
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    width: 100%;
+    margin: 0;
+    background-color: #202020;
+    color: white;
+    display: grid;
+    grid-template-columns: 22% 18% 20% 20% 20%;
+}
+
+h1 {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: center;
+}
+
+main {
+    grid-row: 2;
+    grid-column: 3;
+    justify-self: center;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    width: min-content;
+}
+
+.row {
+    display: flex;
+}
+
+.cell {
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    background-color: white;
+}
+
+#nextTetromino {
+    width: min-content;
+}
+
+#panel {
+    grid-row: 2;
+    grid-column: 4;
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+}
+
+#info {
+    text-align: center;
+    font-weight: 300;
+    font-size: 16px;
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: center;
+}
+
+ul {
+    padding-left: 10px;
+    list-style: none;
+}
+
+button {
+    border: none;
+    color: inherit;
+    background-color: dodgerblue;
+    margin: 0;
+    margin-top: 16px;
+    padding: 8px 16px 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:disabled {
+    background-color: #1c7ad6;
+    cursor: default;
+    color: gray;
+}
+
+a {
+    color: dodgerblue;
+    text-decoration: underline;
+}
+
+.overlay {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 2;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+}
+
+.overlay * {
+    z-index: 2;
+    transform: translateY(75px);
+}
+
+#pauseOverlay h1 {
+    letter-spacing: 5px;
+    font-size: 80px;
+    font-style: italic;
+    color: dodgerblue;
+    margin: 0px 20px;
+}
+
+#gameOverOverlay h1 {
+    letter-spacing: 5px;
+    font-size: 80px;
+    font-style: italic;
+    color: red;
+    margin: 0px 20px;
+}
+
+#pauseTimer {
+    display: none;
+    font-size: 64px;
+    color: yellow;
+}
