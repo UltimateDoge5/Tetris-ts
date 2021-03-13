@@ -11,11 +11,7 @@ class Tetromino {
         this.type = type;
         this.r = blocks[this.type].defaultRotationIndex! | 0;
         this.x = middle;
-        if (myGrid == undefined) {
-            this.myGrid = game.grid;
-        } else {
-            this.myGrid = myGrid;
-        }
+        this.myGrid = myGrid || game.grid;
         this.draw();
     }
 
@@ -85,18 +81,7 @@ class Tetromino {
     }
 
     hardDrop = () => {
-        while (this.softDrop() == true) {
-        }
-
-    }
-
-    gravity = () => {
-        if (this.checkForSettle() == false) {
-            this.y++;
-            clearTimeout(game.cycle);
-            game.cycle = setTimeout(game.gravityCycle, game.delay);
-            this.draw()
-        }
+        while (this.softDrop() == true) {}
     }
 
     borderCollisionCheck = (change: number) => {
@@ -151,7 +136,6 @@ class Tetromino {
             for (let x = 0; x < blocks[this.type].shape[rotation][y].length; x++) {
                 const cell = this.myGrid.getCell(this.x + x - 2, this.y + y);
                 if (cell == undefined || cell.isBlock && this.cells.includes(cell) == false) {
-                    console.log(cell)
                     return false;
                 }
             }
@@ -160,7 +144,7 @@ class Tetromino {
         return true;
     }
 
-    settle = (): boolean => {
+    private settle = (): boolean => {
         //check for line completion
         let row = undefined;
         for (let y = 0; y < game.grid.getGrid().length; y++) {//Get full row

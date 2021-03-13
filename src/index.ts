@@ -13,6 +13,7 @@ class Tetris {
     grid: Grid;
     nextPieceGrid: Grid;
     music: HTMLAudioElement;
+    rpm: number[] = [];
 
     constructor() {
         const gridParent = document.querySelector("main") as HTMLDivElement;
@@ -24,7 +25,7 @@ class Tetris {
         this.music = new Audio("./audio/music.mp3");
         this.music.loop = true;
         this.music.volume = 0.1;
-    
+
         document.addEventListener("keydown", (e: KeyboardEvent) => {
             if (this.isPlaying == false) return false;
             switch (e.code) {
@@ -64,7 +65,6 @@ class Tetris {
         if (this.nextTetromino == undefined) {
             const rand = Math.floor(Math.random() * (this.bag.length - 0)) + 0;
             this.nextTetromino = this.bag[rand];
-            //console.log(rand, this.bag[rand], this.bag)
             this.bag.splice(rand, 1);
         }
 
@@ -111,35 +111,55 @@ class Tetris {
     }
 
     start = () => {
-        this.grid.clearGrid()
-        this.nextPieceGrid.clearGrid()
+        this.grid.clearGrid();
+        this.nextPieceGrid.clearGrid();
         this.nextTetromino = undefined;
         this.currentPiece = new Tetromino(this.getBlockFromBag(), this.grid.trueSizeX / 2);
-        this.delay = 1250;
-        this.cycle = setTimeout(this.gravityCycle, this.delay)
+        this.delay = 1500;
+        this.cycle = setTimeout(this.gravityCycle, this.delay);
         this.isPlaying = true;
-        this.timer = setInterval(() => { this.timerTime++; }, 1000)
-        if(!this.isMuted) this.music.play();
+        this.timer = setInterval(() => { this.timerTime++;
+            if(this.timerTime % 60 == 0){
+                this.rpm.push(this.clearedRows);
+                this.clearedRows = 0;
+            }
+        }, 1000)
+        if (!this.isMuted) this.music.play();
     }
 
     gravityCycle = () => {
-        this.currentPiece!.softDrop()
+        this.currentPiece!.softDrop();
         this.delay -= 1;
-        //timeout = setTimeout(gravityCycle, delay)
     }
 
     gameOver = () => {
-        this.music.pause()
+        this.music.pause();
         clearInterval(this.timer);
         clearTimeout(this.cycle);
+
         const formatTime = () => {
             const timeString = new Date(this.timerTime * 1000).toISOString()
             const minutes = timeString.substr(14, 2);
             const seconds = timeString.substr(17, 2);
             return `<b>${parseInt(minutes)} minutes</b> and <b>${parseInt(seconds)} seconds </b>`;
         }
+
         document.getElementById("gameOverOverlay")!.style.display = "flex";
-        document.getElementById("score")!.innerHTML = `You have cleared <b>${this.clearedRows} rows</b> in ${formatTime()}`;
+
+        if(this.rpm.length == 0){ 
+            this.rpm.push(this.clearedRows);
+            this.clearedRows = 0;
+        }else if (this.clearedRows != 0){
+            this.rpm.push(this.clearedRows);
+        }
+
+        const clearedRowsSum = this.rpm.reduce((a,b)=>{
+            return a+b;
+        });
+
+        document.getElementById("score")!.innerHTML = `You have cleared <b>${clearedRowsSum} rows</b> in ${formatTime()}
+        <br> Rows cleared per minute:<b> ${clearedRowsSum / this.rpm.length}</b>`;
+
         this.clearedRows = 0;
         this.timerTime = 0;
         this.bag = ["I", "T", "O", "L", "J", "S", "Z"];
@@ -149,7 +169,7 @@ class Tetris {
     getNextPiece = () => {
         this.currentPiece = new Tetromino(this.getBlockFromBag(), this.grid.trueSizeX / 2);
         clearTimeout(this.cycle);
-        this.cycle =  setTimeout(this.gravityCycle,this.delay)
+        this.cycle = setTimeout(this.gravityCycle, this.delay)
         return true;
     }
 }
@@ -157,22 +177,19 @@ class Tetris {
 class Cell {
     x: number;
     y: number;
-    size: number;//For interface
-    divRelative: HTMLDivElement;//For interface
+    size: number;
+    divRelative: HTMLDivElement;
     isBlock: boolean = false;
     constructor(y: number, x: number, size: number) {
         this.x = x;
         this.y = y;
-        this.size = size;                                   //For
-        this.divRelative = document.createElement("div");   //
-        this.divRelative.style.width = `${this.size}px`;    //
-        this.divRelative.style.height = `${this.size}px`;   //
-        this.divRelative.classList.add("cell");             //
-        this.divRelative.dataset.x = this.x.toString();     //
-        this.divRelative.dataset.y = this.y.toString();     //Interface
-    }
-    getVector = () => {//Get vector of the cell
-        return { x: this.x, y: this.y }
+        this.size = size;
+        this.divRelative = document.createElement("div");
+        this.divRelative.style.width = `${this.size}px`;
+        this.divRelative.style.height = `${this.size}px`;
+        this.divRelative.classList.add("cell");
+        this.divRelative.dataset.x = this.x.toString();
+        this.divRelative.dataset.y = this.y.toString();
     }
 }
 
@@ -242,18 +259,18 @@ document.querySelector("#start")!.addEventListener("click", function (this: HTML
 document.querySelector("#toggleMusic")!.addEventListener("click", function (this: HTMLButtonElement) {
     game.isMuted = !game.isMuted;
     if (game.isMuted) {
-        this.textContent = "Unmute"
+        this.textContent = "Unmute";
         game.music.pause();
         game.music.currentTime = 0;
     } else {
         this.textContent = "Mute"
-        game.music.play();
+        if (game.isPlaying) game.music.play();
     }
 })
 
-document.querySelector("#resume")!.addEventListener("click", game.resume)
+document.querySelector("#resume")!.addEventListener("click", game.resume);
+
 document.querySelector("#playAgain")!.addEventListener("click", () => {
     document.getElementById("gameOverOverlay")!.style.display = "none";
     (document.getElementById("start")! as HTMLButtonElement).disabled = false;
 })
-

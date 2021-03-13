@@ -9,6 +9,7 @@ class Tetris {
         this.cycle = 0;
         this.timerTime = 0;
         this.timer = 0;
+        this.rpm = [];
         this.getBlockFromBag = () => {
             if (this.bag.length == 0) {
                 this.bag = ["I", "T", "O", "L", "J", "S", "Z"];
@@ -62,10 +63,16 @@ class Tetris {
             this.nextPieceGrid.clearGrid();
             this.nextTetromino = undefined;
             this.currentPiece = new Tetromino(this.getBlockFromBag(), this.grid.trueSizeX / 2);
-            this.delay = 1250;
+            this.delay = 1500;
             this.cycle = setTimeout(this.gravityCycle, this.delay);
             this.isPlaying = true;
-            this.timer = setInterval(() => { this.timerTime++; }, 1000);
+            this.timer = setInterval(() => {
+                this.timerTime++;
+                if (this.timerTime % 60 == 0) {
+                    this.rpm.push(this.clearedRows);
+                    this.clearedRows = 0;
+                }
+            }, 1000);
             if (!this.isMuted)
                 this.music.play();
         };
@@ -84,7 +91,18 @@ class Tetris {
                 return `<b>${parseInt(minutes)} minutes</b> and <b>${parseInt(seconds)} seconds </b>`;
             };
             document.getElementById("gameOverOverlay").style.display = "flex";
-            document.getElementById("score").innerHTML = `You have cleared <b>${this.clearedRows} rows</b> in ${formatTime()}`;
+            if (this.rpm.length == 0) {
+                this.rpm.push(this.clearedRows);
+                this.clearedRows = 0;
+            }
+            else if (this.clearedRows != 0) {
+                this.rpm.push(this.clearedRows);
+            }
+            const clearedRowsSum = this.rpm.reduce((a, b) => {
+                return a + b;
+            });
+            document.getElementById("score").innerHTML = `You have cleared <b>${clearedRowsSum} rows</b> in ${formatTime()}
+        <br> Rows cleared per minute:<b> ${clearedRowsSum / this.rpm.length}</b>`;
             this.clearedRows = 0;
             this.timerTime = 0;
             this.bag = ["I", "T", "O", "L", "J", "S", "Z"];
@@ -138,9 +156,6 @@ class Tetris {
 class Cell {
     constructor(y, x, size) {
         this.isBlock = false;
-        this.getVector = () => {
-            return { x: this.x, y: this.y };
-        };
         this.x = x;
         this.y = y;
         this.size = size;
@@ -208,7 +223,8 @@ document.querySelector("#toggleMusic").addEventListener("click", function () {
     }
     else {
         this.textContent = "Mute";
-        game.music.play();
+        if (game.isPlaying)
+            game.music.play();
     }
 });
 document.querySelector("#resume").addEventListener("click", game.resume);

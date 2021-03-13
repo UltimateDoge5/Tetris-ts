@@ -103,6 +103,7 @@ a {
 .overlay * {
     z-index: 2;
     transform: translateY(75px);
+    text-align: center;
 }
 
 #pauseOverlay h1 {
